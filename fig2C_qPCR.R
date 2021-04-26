@@ -27,11 +27,11 @@ pacman::p_load(
 
 # Select the common selected genes ----------------------------------------
 
-genes <- read.xlsx("common-genes_and_qPCRvalues_MA.xlsx", sheet = 1)
+genes <- read.xlsx("./dat/common-genes_and_qPCRvalues_MA.xlsx", sheet = 1)
 
 # Load qPCR data ----------------------------------------------------------
 
-qpcr <- read.xlsx("common-genes_and_qPCRvalues_MA.xlsx", sheet = 2)
+qpcr <- read.xlsx("./dat/common-genes_and_qPCRvalues_MA.xlsx", sheet = 2)
 is.na(qpcr) %>% sum()
 
 # Select only those that Microarray information. qpcr$MA == "Y"
@@ -127,13 +127,13 @@ barplot <-
 
 barplot
 
-ggsave(filename = "./Fig_2C_barplot.pdf",
+ggsave(filename = "./res/Fig_2C_barplot.pdf",
        plot = barplot,
        scale = 1,
        width = 50,
        height = 20,
        units = "cm")
-ggsave(filename = "./Fig_2C_barplot.svg",
+ggsave(filename = "./res/Fig_2C_barplot.svg",
        plot = barplot,
        device = "svg",
        scale = 1,
@@ -150,7 +150,7 @@ signf_table <- compare_means(Value ~ Condition,
                              symnum.args = symnum.args,
                              method = "wilcox.test", 
                              p.adjust.method = "fdr")
-write.csv(signf_table, "./p-values_significance_table.csv")
+write.csv(signf_table, "./res/p-values_significance_table.csv")
 
 # Enrichment analysis of selected genes -------------------------------------------------------
 
@@ -233,8 +233,4 @@ writeData(tables_enr, 1, bp_table)
 writeData(tables_enr, 2, cc_table)
 writeData(tables_enr, 3, mf_table)
 writeData(tables_enr, 4, kegg_table)
-saveWorkbook(tables_enr, file = "./enrichment_tables_clusterprofiler.xlsx", overwrite = TRUE)
-
-# Save results
-
-save.image(paste0("./", Sys.Date(), "_results.RData"))
+saveWorkbook(tables_enr, file = "./res/enrichment_tables_clusterprofiler.xlsx", overwrite = TRUE)

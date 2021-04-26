@@ -22,7 +22,7 @@ pacman::p_load(
 
 # Load logFC data info and select 1500 DEGs -------------------------------
 
-FC_logFC_values <- read_excel("Groups_of_Degs_Illumina_dataset.xlsx")
+FC_logFC_values <- read_excel("dat/Groups_of_Degs_Illumina_dataset.xlsx")
 FC_logFC_values <- FC_logFC_values[, c(2:10)]
 colnames(FC_logFC_values) <- FC_logFC_values[1,]
 FC_logFC_values <- FC_logFC_values[-1,]
@@ -61,35 +61,35 @@ unique(duplicated(degs))
 # Select 1500 Symbols with highest absolute Sum_FC value
 
 length(degs$Symbol) # 7308 Symbols in total
-write.csv(degs, "./all_list_of_degs_Fig2A.csv")
+write.csv(degs, "./res/all_list_of_degs_Fig2A.csv")
 degs <- degs %>% dplyr::mutate(Abs = abs(MeanFC)) %>% arrange(desc(Abs))
 sel_degs <- degs[1:1500,]
-write.csv(sel_degs, "./sel_degs.csv")
+write.csv(sel_degs, "./res/sel_degs.csv")
 
 # How many of the 1500 are upregulated/downregulated. Export too.
 
 upreg_sel_degs <- sel_degs %>% filter(MeanFC > 0)
 upreg_sel_degs$Symbol %>% length # 863 upregulated
-write.csv(upreg_sel_degs, "./upreg_sel_degs.csv")
+write.csv(upreg_sel_degs, "./res/upreg_sel_degs.csv")
 
 down_sel_degs <- sel_degs %>% filter(MeanFC < 0)
 down_sel_degs$Symbol %>% length # 637 downregulated
-write.csv(down_sel_degs, "down_sel_degs.csv")
+write.csv(down_sel_degs, "./res/down_sel_degs.csv")
 
 # How many DEGs (whole group) above 1.2 and 1.3 Abs Mean FC
 
 degs_1.2_or_more <- degs %>% filter(Abs >= 1.2) # 2594 DEGs
 degs_1.2_or_more$Symbol %>% length # 2594 DEGs
-write.csv(degs_1.2_or_more, "degs_1.2_or_more.csv")
+write.csv(degs_1.2_or_more, "./res/degs_1.2_or_more.csv")
 
 degs_1.3_or_more <- degs %>% filter(Abs >= 1.3) # 2594 DEGs
 degs_1.3_or_more$Symbol %>% length # 2594 DEGs
-write.csv(degs_1.3_or_more, "degs_1.3_or_more.csv")
+write.csv(degs_1.3_or_more, "./res/degs_1.3_or_more.csv")
 
 
 # Load Illumina Expression Data -------------------------------------------
 
-illumina <- read.table("Expression_Illu.txt", sep = "")
+illumina <- read.table("./dat/Expression_Illu.txt", sep = "")
 illumina_2 <- illumina %>% rownames_to_column("IL-ID")
 illu <- left_join(sel_degs, illumina_2, by = "IL-ID")
 apply(illu[,13:ncol(illu)], 2, class) %>% unique # All added columns are already numeric
@@ -132,7 +132,7 @@ expr_scaled[expr_scaled > 1.634455] <- 1.634455
 
 # Important: only MetaYes = 1
 
-metadata <- read_delim("pheno_anno.txt", "\t",
+metadata <- read_delim("./dat/pheno_anno.txt", "\t",
                        escape_double = FALSE,
                        trim_ws = TRUE)
 
@@ -220,12 +220,12 @@ heatmap_final
 # Export in SVG format with Cairo
 
 library(Cairo)
-Cairo::CairoSVG(file = "./illumina_heatmap_1500.svg", width = 14, height = 7)
+Cairo::CairoSVG(file = "./res/illumina_heatmap_1500.svg", width = 14, height = 7)
 heatmap_final
 dev.off()
 
 # PDF export
 
-pdf(file = "./illumina_heatmap_1500.pdf", width = 14, height = 7)
+pdf(file = "./res/illumina_heatmap_1500.pdf", width = 14, height = 7)
 heatmap_final
 dev.off()
